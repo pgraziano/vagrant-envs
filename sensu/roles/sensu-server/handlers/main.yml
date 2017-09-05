@@ -1,0 +1,13 @@
+---
+- name: restart sensu-server
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - sensu-server
+    - sensu-api
+
+- name: restart uchiwa
+  service:
+    name: uchiwa
+    state: restarted

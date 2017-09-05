@@ -1,0 +1,26 @@
+---
+- name: install GPG key
+  apt_key:
+    url: https://sensu.global.ssl.fastly.net/apt/pubkey.gpg
+    state: present
+
+- name: add repo
+  apt_repository:
+    repo: "deb https://sensu.global.ssl.fastly.net/apt {{ ansible_lsb.codename }} main"
+    filename: sensu
+    state: present
+
+- name: install sensu
+  apt:
+    name: sensu
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: configure sensu
+  template:
+    src: etc/sensu/conf.d/rabbitmq.json
+    dest: /etc/sensu/conf.d/rabbitmq.json
+    owner: root
+    group: root
+    mode: 0755

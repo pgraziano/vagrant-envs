@@ -1,0 +1,14 @@
+---
+- name: configure sensu client
+  template:
+    src: etc/sensu/conf.d/client.json
+    dest: /etc/sensu/conf.d/client.json
+    owner: root
+    group: root
+    mode: 0755
+  notify: restart sensu-client
+
+- name: enable sensu-client service
+  service:
+    name: sensu-client
+    enabled: yes

@@ -1,0 +1,8 @@
+{
+    "rabbitmq": {
+        "host": "{{ hostvars['alpha']['nic']['lan']['address'] }}",
+        "vhost": "{{ sensu.rabbit_vhost }}",
+        "user": "{{ sensu.rabbit_user }}",
+        "password": "{{ sensu.rabbit_password}}"
+    }
+}

@@ -1,0 +1,44 @@
+---
+- name: install rabbitmq-server
+  apt:
+    name: rabbitmq-server
+    state: present
+
+- name: start and enable rabbitmq service
+  service:
+    name: rabbitmq-server
+    state: started
+    enabled: yes
+
+- name: delete guest user
+  rabbitmq_user:
+    user: guest
+    state: absent
+
+- name: enabled the rabbitmqadmin plugin
+  rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+  register: mgmtplugin
+
+- name: restart rabbit server
+  service: name=rabbitmq-server state=restarted
+  when: mgmtplugin.changed
+
+- name: get path to rabbitmqadmin binary
+  shell: "ls /var/lib/rabbitmq/mnesia/rabbit@*/rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
+  register: binary_path
+
+- name: make rabbitmqadmin binary executable
+  file:
+    path: "{{ binary_path.stdout }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: set alternative for rabbitmqadmin binary
+  alternatives:
+    name: rabbitmqadmin
+    path: "{{ binary_path.stdout }}"
+    link: /usr/local/bin/rabbitmqadmin
+

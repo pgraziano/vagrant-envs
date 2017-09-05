@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: sensu-common
+  - role: rabbitmq
+    tags: rabbitmq

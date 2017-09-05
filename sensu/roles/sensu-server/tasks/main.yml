@@ -1,0 +1,71 @@
+---
+- name: create rabbitmq vhost
+  rabbitmq_vhost:
+    name: "{{ sensu.rabbit_vhost }}"
+    state: present
+
+- name: create rabbitmq user
+  rabbitmq_user:
+    user: "{{ sensu.rabbit_user }}"
+    password: "{{ sensu.rabbit_password }}"
+    vhost: "{{ sensu.rabbit_vhost }}"
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+
+- name: configure api
+  template:
+    src: etc/sensu/conf.d/api.json
+    dest: /etc/sensu/conf.d/api.json
+    owner: root
+    group: root
+    mode: 0755
+  notify: restart sensu-server
+
+- name: enable sensu-server service
+  service:
+    name: sensu-server
+    state: started
+    enabled: yes
+
+- name: install redis
+  apt:
+    name: redis-server
+    state: present
+
+- name: enable redis
+  service:
+    name: redis
+    state: started
+    enabled: yes
+
+- name: configure redis
+  template:
+    src: etc/sensu/conf.d/redis.json
+    dest: /etc/sensu/conf.d/redis.json
+    owner: root
+    group: root
+    mode: 0755
+  notify: restart sensu-server
+
+- name: install uchiwa
+  apt:
+    name: uchiwa
+    state: present
+
+- name: enable uchiwa service
+  service:
+    name: uchiwa
+    state: started
+    enabled: yes
+
+- name: configure uchiwa
+  template:
+    src: etc/sensu/conf.d/uchiwa.json
+    dest: /etc/sensu/conf.d/uchiwa.json
+    owner: root
+    group: root
+    mode: 0755
+  notify: restart uchiwa
+
